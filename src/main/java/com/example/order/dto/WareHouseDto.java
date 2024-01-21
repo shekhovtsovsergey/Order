@@ -9,5 +9,5 @@ import lombok.*;
 @AllArgsConstructor
 @RequiredArgsConstructor
 public class WareHouseDto {
-    private String name;
+    private Long id;
 }

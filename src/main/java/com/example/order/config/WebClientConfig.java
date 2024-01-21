@@ -1,6 +1,8 @@
 package com.example.order.config;
 
 import com.example.order.property.DeliveryServiceIntegrationProperties;
+import com.example.order.property.PaymentServiceIntegrationProperties;
+import com.example.order.property.WareServiceIntegrationProperties;
 import io.netty.channel.ChannelOption;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.handler.timeout.WriteTimeoutHandler;
@@ -18,7 +20,9 @@ import java.util.concurrent.TimeUnit;
 @Configuration
 @EnableConfigurationProperties(
         {
-                DeliveryServiceIntegrationProperties.class
+                DeliveryServiceIntegrationProperties.class,
+                WareServiceIntegrationProperties.class,
+                PaymentServiceIntegrationProperties.class
         }
 )
 @RequiredArgsConstructor
@@ -27,7 +31,7 @@ public class WebClientConfig {
        private final DeliveryServiceIntegrationProperties deliveryServiceIntegrationProperties;
 
         @Bean
-        public WebClient pictureServiceWebClient() {
+        public WebClient deliveryServiceWebClient() {
             TcpClient tcpClient = TcpClient
                     .create()
                     .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, deliveryServiceIntegrationProperties.getConnectTimeout())
@@ -42,5 +46,43 @@ public class WebClientConfig {
                     .clientConnector(new ReactorClientHttpConnector(HttpClient.from(tcpClient)))
                     .build();
         }
+
+
+        @Bean
+        public WebClient wareServiceWebClient() {
+            TcpClient tcpClient = TcpClient
+                    .create()
+                    .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, deliveryServiceIntegrationProperties.getConnectTimeout())
+                    .doOnConnected(connection -> {
+                        connection.addHandlerLast(new ReadTimeoutHandler(deliveryServiceIntegrationProperties.getReadTimeout(), TimeUnit.MILLISECONDS));
+                        connection.addHandlerLast(new WriteTimeoutHandler(deliveryServiceIntegrationProperties.getWriteTimeout(), TimeUnit.MILLISECONDS));
+                    });
+
+            return WebClient
+                    .builder()
+                    .baseUrl(deliveryServiceIntegrationProperties.getUrl())
+                    .clientConnector(new ReactorClientHttpConnector(HttpClient.from(tcpClient)))
+                    .build();
+        }
+
+
+
+        @Bean
+        public WebClient paymentServiceWebClient() {
+            TcpClient tcpClient = TcpClient
+                    .create()
+                    .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, deliveryServiceIntegrationProperties.getConnectTimeout())
+                    .doOnConnected(connection -> {
+                        connection.addHandlerLast(new ReadTimeoutHandler(deliveryServiceIntegrationProperties.getReadTimeout(), TimeUnit.MILLISECONDS));
+                        connection.addHandlerLast(new WriteTimeoutHandler(deliveryServiceIntegrationProperties.getWriteTimeout(), TimeUnit.MILLISECONDS));
+                    });
+
+            return WebClient
+                    .builder()
+                    .baseUrl(deliveryServiceIntegrationProperties.getUrl())
+                    .clientConnector(new ReactorClientHttpConnector(HttpClient.from(tcpClient)))
+                    .build();
+        }
+
 
 }

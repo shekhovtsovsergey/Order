@@ -22,3 +22,13 @@ integrations:
     connect-timeout: 5000
     read-timeout: 10000
     write-timeout: 5000
+  ware:
+    url: http://localhost:8082/
+    connect-timeout: 5000
+    read-timeout: 10000
+    write-timeout: 5000
+  payment:
+    url: http://localhost:8083/
+    connect-timeout: 5000
+    read-timeout: 10000
+    write-timeout: 5000

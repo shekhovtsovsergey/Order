@@ -9,5 +9,5 @@ import lombok.*;
 @AllArgsConstructor
 @RequiredArgsConstructor
 public class DeliveryDto {
-    private String name;
+    private Long id;
 }
