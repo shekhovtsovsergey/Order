@@ -1,8 +1,12 @@
 package com.example.order.service;
 
+import com.example.order.dto.OrderDto;
 import com.example.order.dto.PaymentDto;
+import com.example.order.dto.PaymentDtoRequest;
+import com.example.order.dto.PaymentDtoResponse;
 import com.example.order.integration.DeliveryServiceIntegration;
 import com.example.order.integration.PaymentServiceIntegration;
+import com.example.order.integration.ResponseWrapper;
 import com.example.order.integration.WareServiceIntegration;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,23 +24,34 @@ public class OrderServiceImpl implements OrderService {
 
 
     @Override
-    public ResponseEntity<String> createOrder(PaymentDto paymentDto) {
-        Long prepareFromDelivery = null;
-        Long prepareFromWare = null;
-        Long prepareFromDPayment = null;
-        try {
-            prepareFromDelivery = deliveryServiceIntegration.getDelivery();
-            prepareFromWare = wareServiceIntegration.getWare();
-            prepareFromDPayment = paymentServiceIntegration.getPayment(paymentDto);
-        } catch (Exception e) {
-            deliveryServiceIntegration.getDelivery();
-            wareServiceIntegration.getWare();
-            paymentServiceIntegration.cancelPayment(prepareFromDPayment);
+    public ResponseEntity<String> createOrder(OrderDto orderDto) {
+
+        PaymentDtoRequest paymentDtoRequest = new PaymentDtoRequest(orderDto.getDebitAccount(),orderDto.getAmount());
+
+        if (deliveryServiceIntegration.getDelivery() == null) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error");
         }
+
+        PaymentDtoResponse paymentDtoResponse = paymentServiceIntegration.getPayment(paymentDtoRequest);
+        Long prepareFromPayment = paymentDtoResponse.getId();
+        if (prepareFromPayment == null) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error");
+        }
+
+
+        ResponseWrapper<Long> wareResponse = wareServiceIntegration.getWare();
+        if (wareResponse.isError()) {
+            paymentServiceIntegration.cancelPayment(prepareFromPayment);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error");
+        }
+        Long prepareFromWare = wareResponse.unwrap();
+
         deliveryServiceIntegration.getDelivery();
         wareServiceIntegration.getWare();
-        paymentServiceIntegration.commitePayment(prepareFromDPayment);
+        paymentServiceIntegration.commitePayment(prepareFromPayment);
         return ResponseEntity.status(HttpStatus.OK).body("Ok");
     }
+
+
+
 }

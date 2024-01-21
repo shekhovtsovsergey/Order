@@ -1,6 +1,8 @@
 package com.example.order.integration;
 
 import com.example.order.dto.PaymentDto;
+import com.example.order.dto.PaymentDtoRequest;
+import com.example.order.dto.PaymentDtoResponse;
 import com.example.order.dto.WareHouseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -13,34 +15,34 @@ public class PaymentServiceIntegration {
 
     private final WebClient paymentServiceWebClient;
 
-    public Long getPayment(PaymentDto paymentDto) {
+    public PaymentDtoResponse getPayment(PaymentDtoRequest paymentDtoRequest) {
         return paymentServiceWebClient.post()
-                .uri("/reserve")
+                .uri("/payment/reserve")
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(new PaymentDto())
+                .bodyValue(paymentDtoRequest)
                 .retrieve()
-                .bodyToMono(Long.class)
+                .bodyToMono(PaymentDtoResponse.class)
                 .block();
     }
 
-    public Long cancelPayment(Long id) {
+    public String cancelPayment(Long id) {
         return paymentServiceWebClient.post()
-                .uri("/cancel")
+                .uri("/payment/cancel")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(id)
                 .retrieve()
-                .bodyToMono(Long.class)
+                .bodyToMono(String.class)
                 .block();
     }
 
 
-    public Long commitePayment(Long id) {
+    public String commitePayment(Long id) {
         return paymentServiceWebClient.post()
-                .uri("/pay")
+                .uri("/payment/pay")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(id)
                 .retrieve()
-                .bodyToMono(Long.class)
+                .bodyToMono(String.class)
                 .block();
     }
 

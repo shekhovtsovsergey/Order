@@ -1,5 +1,6 @@
 package com.example.order.controller;
 
+import com.example.order.dto.OrderDto;
 import com.example.order.dto.PaymentDto;
 import com.example.order.service.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -16,8 +17,9 @@ public class OrderController {
     private final OrderService orderService;
 
     @GetMapping("/order")
-    public ResponseEntity<ResponseEntity<String>> getOrder (@RequestBody PaymentDto paymentDto) {
-        return ResponseEntity.status(HttpStatus.OK).body(orderService.createOrder(paymentDto));
+    public ResponseEntity<ResponseEntity<String>> getOrder (@RequestBody OrderDto orderDto) {
+        System.out.println(orderDto.toString()+orderDto.getDebitAccount());
+        return ResponseEntity.status(HttpStatus.OK).body(orderService.createOrder(orderDto));
     }
 
 }

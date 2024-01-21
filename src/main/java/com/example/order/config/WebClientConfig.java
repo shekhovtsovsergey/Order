@@ -29,6 +29,8 @@ import java.util.concurrent.TimeUnit;
 public class WebClientConfig {
 
        private final DeliveryServiceIntegrationProperties deliveryServiceIntegrationProperties;
+       private final WareServiceIntegrationProperties wareServiceIntegrationProperties;
+       private final PaymentServiceIntegrationProperties paymentServiceIntegrationProperties;
 
         @Bean
         public WebClient deliveryServiceWebClient() {
@@ -52,15 +54,15 @@ public class WebClientConfig {
         public WebClient wareServiceWebClient() {
             TcpClient tcpClient = TcpClient
                     .create()
-                    .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, deliveryServiceIntegrationProperties.getConnectTimeout())
+                    .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, wareServiceIntegrationProperties.getConnectTimeout())
                     .doOnConnected(connection -> {
-                        connection.addHandlerLast(new ReadTimeoutHandler(deliveryServiceIntegrationProperties.getReadTimeout(), TimeUnit.MILLISECONDS));
-                        connection.addHandlerLast(new WriteTimeoutHandler(deliveryServiceIntegrationProperties.getWriteTimeout(), TimeUnit.MILLISECONDS));
+                        connection.addHandlerLast(new ReadTimeoutHandler(wareServiceIntegrationProperties.getReadTimeout(), TimeUnit.MILLISECONDS));
+                        connection.addHandlerLast(new WriteTimeoutHandler(wareServiceIntegrationProperties.getWriteTimeout(), TimeUnit.MILLISECONDS));
                     });
 
             return WebClient
                     .builder()
-                    .baseUrl(deliveryServiceIntegrationProperties.getUrl())
+                    .baseUrl(wareServiceIntegrationProperties.getUrl())
                     .clientConnector(new ReactorClientHttpConnector(HttpClient.from(tcpClient)))
                     .build();
         }
@@ -71,15 +73,15 @@ public class WebClientConfig {
         public WebClient paymentServiceWebClient() {
             TcpClient tcpClient = TcpClient
                     .create()
-                    .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, deliveryServiceIntegrationProperties.getConnectTimeout())
+                    .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, paymentServiceIntegrationProperties.getConnectTimeout())
                     .doOnConnected(connection -> {
-                        connection.addHandlerLast(new ReadTimeoutHandler(deliveryServiceIntegrationProperties.getReadTimeout(), TimeUnit.MILLISECONDS));
-                        connection.addHandlerLast(new WriteTimeoutHandler(deliveryServiceIntegrationProperties.getWriteTimeout(), TimeUnit.MILLISECONDS));
+                        connection.addHandlerLast(new ReadTimeoutHandler(paymentServiceIntegrationProperties.getReadTimeout(), TimeUnit.MILLISECONDS));
+                        connection.addHandlerLast(new WriteTimeoutHandler(paymentServiceIntegrationProperties.getWriteTimeout(), TimeUnit.MILLISECONDS));
                     });
 
             return WebClient
                     .builder()
-                    .baseUrl(deliveryServiceIntegrationProperties.getUrl())
+                    .baseUrl(paymentServiceIntegrationProperties.getUrl())
                     .clientConnector(new ReactorClientHttpConnector(HttpClient.from(tcpClient)))
                     .build();
         }
