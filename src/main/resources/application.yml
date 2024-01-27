@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 8000
 spring:
   datasource:
     driver-class-name: org.h2.Driver
@@ -18,17 +18,17 @@ spring:
         web-allow-others: true
 integrations:
   delivery:
-    url: http://localhost:8081/
+    url: http://myapp-service-8081.default.svc.cluster.local:8081/delivery
     connect-timeout: 5000
     read-timeout: 10000
     write-timeout: 5000
   ware:
-    url: http://localhost:8082/
+    url: http://myapp-service-8082.default.svc.cluster.local:8082/ware
     connect-timeout: 5000
     read-timeout: 10000
     write-timeout: 5000
   payment:
-    url: http://localhost:8083/
+    url: http://myapp-service-8083.default.svc.cluster.local:8083/payment
     connect-timeout: 5000
     read-timeout: 10000
     write-timeout: 5000
